@@ -1,0 +1,74 @@
+<template>
+  <div class="home">
+    <br/>
+    <h1>/vue/ vueJS based forum site</h1>
+  </div>
+  <form @submit.prevent="createForum">
+  <div class="form-group">
+    <label for="formGroupExampleInput">Title</label>
+    <input type="text" class="form-control"  placeholder="Title" v-model="Title">
+  </div>
+  <div class="form-group">
+    <label for="formGroupExampleInput2">Description</label>
+    <input type="text" class="form-control" placeholder="Description" v-model="Description">
+  </div>
+  <div class="mb-3">
+  <label for="formFile" class="form-label">Image</label>
+  <input class="form-control" type="file" id="formFile" @change="onFileChange">
+</div>
+<div class="mb-3">
+<button @click="removeImage" class="btn btn-danger">remove image</button>
+</div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</template>
+
+<script>
+// @ is an alias to /src
+import forColRef from "../firebase";
+import { addDoc, getDocs, doc, deleteDoc } from "firebase/firestore";
+
+export default {
+  name: 'HomeView',
+  components: {
+  },
+  data() {
+    return {
+      Title: '',
+      Description: '',
+      image: null,
+    }
+  },
+  methods: {
+    async createForum() {
+      console.log("creating forum...");
+      console.log(this.image)
+      console.log(this.Description)
+      console.log(this.Title)
+      console.log(this.data)
+      const addedDoc = await addDoc(forColRef, this.$data);
+      alert("forum added");
+      this.$router.push("/");
+    },
+     onFileChange(e) {
+      var files = e.target.files || e.dataTransfer.files;
+      if (!files.length)
+        return;
+      this.createImage(files[0]);
+    },
+      createImage(file) {
+      var image = new Image();
+      var reader = new FileReader();
+      var vm = this;
+
+      reader.onload = (e) => {
+        vm.image = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
+    removeImage: function (e) {
+      this.image = '';
+    }
+  }
+}
+</script>
