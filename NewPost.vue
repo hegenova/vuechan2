@@ -3,14 +3,14 @@
     <br/>
     <h1>/vue/ vueJS based forum site</h1>
   </div>
-  <form>
+  <form @submit.prevent="createPost">
   <div class="form-group">
     <label for="formGroupExampleInput2">Post</label>
-    <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="post">
+    <input type="text" class="form-control" v-model="postInfo.post" placeholder="post">
   </div>
   <div class="mb-3">
   <label for="formFile" class="form-label">Image</label>
-  <input class="form-control" type="file" id="formFile">
+  <input class="form-control" type="file" id="formFile" @change="onFileChange">
 </div>
   <button type="submit" class="btn btn-primary">Submit new post</button>
 </form>
@@ -19,36 +19,56 @@
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { getDocs, doc, deleteDoc } from "firebase/firestore";
-
+import db from "../firebase";
+import { addDoc, doc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection } from "firebase/firestore";
 export default {
   name: 'HomeView',
   components: {
   },
   data() {
     return {
-      forums: [],
-      selectedDoc: null,
-      search: "",
-      adminMode: false,
+      forumId: "",
+      image: null,
+      postInfo:  {
+      replyTo: "",
+      threadId: "",
+      post: "",
+      imagepost: '',
+      }
     }
   },
   methods: {
-    async fetchData() {
-      let dataSS = await getDocs(forColRef);
-      let forums = [];
-      dataSS.forEach((forum) => {
-        let forumData = forum.data();
-        forumData.id = forum.id;
-        forums.push(forumData);
-      });
-      this.forums = forums
+    async createPost() {
+      let postColRef = collection(db, `${this.forumId}/post`);
+      console.log("creating post...");
+      const addedDoc = await addDoc(postColRef,this.postInfo);
+      alert("post added");
+      this.$router.push("/");
     },
-    async deleteForum(forumID) {
-      let forumRef = doc(forColRef, forumID);
-      await deleteDoc(forumRef);
-      this.$router.go();
-    }
+    onFileChange(e) {
+      var files = e.target.files || e.dataTransfer.files;
+      if (!files.length)
+        return;
+      this.createImage(files[0]);
+      console.log(this.image)
+      this.postInfo.imagepost=this.image;
+    },
+      createImage(file) {
+      var image = new Image();
+      var reader = new FileReader();
+      var vm = this;
+
+      reader.onload = (e) => {
+        vm.image = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
+  },
+  created() {
+    let forumId = this.$route.params.forumId
+    this.forumId = forumId;
+    this.postInfo.threadId = forumId;
   }
 }
 </script>

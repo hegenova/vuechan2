@@ -16,9 +16,6 @@
   <label for="formFile" class="form-label">Image</label>
   <input class="form-control" type="file" id="formFile" @change="onFileChange">
 </div>
-<div class="mb-3">
-<button @click="removeImage" class="btn btn-danger">remove image</button>
-</div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 </template>
@@ -55,6 +52,7 @@ export default {
       if (!files.length)
         return;
       this.createImage(files[0]);
+      console.log(this.image);
     },
       createImage(file) {
       var image = new Image();

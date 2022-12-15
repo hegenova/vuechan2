@@ -7,12 +7,11 @@
   <div class="row">
   <div class="col-sm-6">
     <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">title</h5>
-        <p>image</p>
-        <p class="card-text">description
-        </p>
-        <router-link href="#" class="btn btn-primary" :to="{path:'/thread'}">view thread</router-link>
+      <div class="card-body" v-for="forum in forums" :key="forum.id">
+        <h5 class="card-title">{{forum.Title}}</h5>
+        <div style="max-height:100px; max-width:100px; overflow:hidden"><img :src="forum.image" /></div>
+        <p class="card-text">{{forum.Description}}</p>
+        <router-link href="#" class="btn btn-primary" :to="{path:`/thread/${forum.id}`}">view thread</router-link>
        
       </div>
     </div>
@@ -53,6 +52,9 @@ export default {
       await deleteDoc(forumRef);
       this.$router.go();
     }
+  },
+  created() {
+    this.fetchData();
   }
 }
 </script>

@@ -18,13 +18,14 @@
   <div class="row">
     <div class="card">
       <div class="card-body" v-for="forum in forums" :key="forum.id">
-        <div style="max-height:100px; max-width:100px;">
+        <div style="max-height:100px; max-width:100px; overflow:hidden">
         <img :src="forum.image" />
         </div>
+        #{{ forum.id}}
         <h5 class="card-title">{{ forum.Title }}</h5>
         <p class="card-text">{{ forum.Description }}
         </p>
-        <router-link href="#" class="btn btn-primary" :to="{path:'/thread'}">view thread</router-link>
+        <router-link href="#" class="btn btn-primary" :to="{path:`/thread/${forum.id}`}">view thread</router-link>
         <br /><br />
         <h5> Last two reply </h5>
         <br/><br/>
@@ -39,8 +40,7 @@
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { getDocs, doc, deleteDoc } from "firebase/firestore";
-
+import { getDocs, getCountFromServer, doc, deleteDoc } from "firebase/firestore";
 export default {
   name: 'HomeView',
   components: {
@@ -48,6 +48,7 @@ export default {
   data() {
     return {
       forums: [],
+      numberOfReply: [],
       selectedDoc: null,
       search: "",
       adminMode: false,
@@ -55,7 +56,6 @@ export default {
   },
   methods: {
     async fetchData() {
-      console.log("in fetchData")
       let dataSS = await getDocs(forColRef);
       let forums = [];
       dataSS.forEach((forum) => {
@@ -64,16 +64,14 @@ export default {
         forums.push(forumData);
       });
       this.forums = forums
-      console.log(this.forums)
     },
     async deleteForum(forumID) {
       let forumRef = doc(forColRef, forumID);
       await deleteDoc(forumRef);
       this.$router.go();
-    }
+    },
   },
   created() {
-    console.log("in Created")
     this.fetchData();
   },
   computed: {
