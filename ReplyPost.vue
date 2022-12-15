@@ -23,7 +23,7 @@
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { getDocs, getDoc, setDoc, getCountFromServer, addDoc, doc, deleteDoc } from "firebase/firestore";
+import { getDocs, getDoc, setDoc, serverTimestamp, getCountFromServer, addDoc, doc, deleteDoc } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import db from "../firebase";
 export default {
@@ -73,6 +73,7 @@ export default {
       if (this.image==null){
         this.postInfo.imagepost=""
       }
+      this.postInfo.postOrder= serverTimestamp();
       this.addLastPost();
       this.postInfo.replyTo=this.postId;
       console.log("in createReplyPost()")

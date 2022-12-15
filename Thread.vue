@@ -55,7 +55,7 @@
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { getDoc, getDocs, doc, setDoc } from "firebase/firestore";
+import { getDoc, getDocs, doc, setDoc, query, orderBy } from "firebase/firestore";
 import { getFirestore, collection } from "firebase/firestore";
 import db from "../firebase";
 export default {
@@ -96,7 +96,7 @@ export default {
     },
     async fetchPost() {
       const postColRef = collection(db, `${this.forumId}/post`);
-      let dataSS = await getDocs(postColRef);
+      let dataSS = await getDocs(query(postColRef, orderBy('postOrder')));
       let posts = [];
       dataSS.forEach((post) => {
         let postData = post.data();

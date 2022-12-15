@@ -23,7 +23,7 @@
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { addDoc, getDocs, getDoc, setDoc, doc, getCountFromServer, deleteDoc, collection } from "firebase/firestore";
+import { addDoc, serverTimestamp, getDoc, setDoc, doc, getCountFromServer, deleteDoc, collection } from "firebase/firestore";
 import db from "../firebase";
 export default {
   name: 'HomeView',
@@ -45,32 +45,18 @@ export default {
       replyAmount: null,
       imageAmount: null,
       prevThread: null,
+      imagepost: "",
       bumpOrder: '',}
     }
   },
   methods: {
-    // async getCreatedOrder(){
-    //   const orderDocRef = doc(db, "order", "threadOrder")
-    //   let order=await getDocs(orderDocRef)
-    //   let orderData = order.data();
-    //   console.log(orderData);
-    // },
-    async addPrevThreadOrder(){
-      
-    },
-    async addCreatedOrder(){
-      this.dataInfo.createdOrder = this.createdOrder+1;
-        let setDocRef = doc(db, this.addedDoc)
-       await setDoc(setDocRef, this.dataInfo, {merge: true});
-       console.log("order created")
-    },
     async createForum() {
       console.log("creating forum...");
       this.dataInfo.imageThread=this.image;
+      this.dataInfo.createdOrder= serverTimestamp();
       const addedDoc = await addDoc(forColRef, this.dataInfo);
       console.log()
       this.addedDoc= addedDoc.id;
-      this.addCreatedOrder();
       alert("forum added");
       this.$router.push("/");
     },

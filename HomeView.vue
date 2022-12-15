@@ -5,15 +5,6 @@
   </div>
    <input type="text" v-model="search" name="search" placeholder="search thread">
    <div class="col-sm-2">
-     <form action="#">
-      <label for="lang">Sort by </label>
-      <select name="languages" id="lang">
-        <option value="javascript">Bump</option>
-        <option value="javascript">New</option>
-        <option value="javascript">Old</option>
-      </select>
-      <input type="submit" value="Submit" />
-</form>
    </div>
   <div class="row">
     <div class="card">
@@ -59,7 +50,7 @@
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { getDocs, getCountFromServer, getDoc, doc, deleteDoc } from "firebase/firestore";
+import { getDocs, getCountFromServer, getDoc, query, orderBy, doc, deleteDoc, limitToLast } from "firebase/firestore";
 export default {
   name: 'HomeView',
   components: {
@@ -77,8 +68,11 @@ export default {
     }
   },
   methods: {
+    newSortForum(){
+      this.forums=this.forums.reverse;
+    },
     async fetchData() {
-      let dataSS = await getDocs(forColRef);
+      let dataSS = await getDocs(query(forColRef, orderBy('createdOrder'), limitToLast(5)));
       let forums = [];
       dataSS.forEach((forum) => {
         let forumData = forum.data();
@@ -96,11 +90,20 @@ export default {
       let docref = forColRef;
       let ss = await getCountFromServer(docref);
       this.threadCount = ss.data().count;
+
+    },
+    neutralize(){
+      if(this.forums.imagepost==null){
+        this.forums.imagepost = ""
+      }
     }
   },
   created() {
+    const q = query(forColRef, orderBy('createdOrder'))
+    console.log(q)
     this.fetchData();
-
+    this.neutralize();
+    console.log(this.forums);
   },
   computed: {
     filteredItems(){

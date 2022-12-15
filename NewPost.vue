@@ -20,7 +20,7 @@
 // @ is an alias to /src
 import forColRef from "../firebase";
 import db from "../firebase";
-import { addDoc, doc, getCountFromServer, setDoc, deleteDoc } from "firebase/firestore";
+import { addDoc, doc, getCountFromServer, serverTimestamp, setDoc, deleteDoc } from "firebase/firestore";
 import { getFirestore, collection } from "firebase/firestore";
 export default {
   name: 'HomeView',
@@ -56,6 +56,7 @@ export default {
       if (this.image==null){
         this.postInfo.imagepost=""
       }
+      this.postInfo.postOrder= serverTimestamp();
       this.addLastPost();
       let postColRef = collection(db, `${this.forumId}/post`);
       console.log("creating post...");

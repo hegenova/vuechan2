@@ -35,7 +35,7 @@
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { getDocs, doc, deleteDoc } from "firebase/firestore";
+import { getDocs, doc, deleteDoc, query, orderBy } from "firebase/firestore";
 
 export default {
   name: 'HomeView',
@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     async fetchData() {
-      let dataSS = await getDocs(forColRef);
+      let dataSS = await getDocs(query(forColRef, orderBy('createdOrder') ));
       let forums = [];
       dataSS.forEach((forum) => {
         let forumData = forum.data();
