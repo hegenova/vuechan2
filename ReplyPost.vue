@@ -23,7 +23,7 @@
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { getDocs, getDoc, addDoc, doc, deleteDoc } from "firebase/firestore";
+import { getDocs, getDoc, setDoc, getCountFromServer, addDoc, doc, deleteDoc } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import db from "../firebase";
 export default {
@@ -44,11 +44,23 @@ export default {
         imagepost: "",
         replyTo: "",
         threadId: "",
+        postOrder: "",
       },
       adminMode: false,
     }
   },
   methods: {
+    async addLastPost(){
+    console.log("adding last post")
+    let postColRef = collection(db, `${this.forumId}/post`);
+    let ss = await getCountFromServer(postColRef);
+    this.postInfo.postOrder = ss.data().count+1;
+    console.log(this.postInfo.postOrder)
+    const lastColRef = doc(db, this.forumId)
+    await setDoc(lastColRef,this.postInfo, {merge: true});
+    console.log("lastPost created");
+    this.$router.push("/");
+    },
     async getThreadId() {
       console.log("in getthreadId()")
       let forumId = localStorage.getItem("id");
@@ -57,6 +69,11 @@ export default {
       localStorage.clear();
     },
     async createReplyPost() {
+      this.postInfo.imagepost=this.image;
+      if (this.image==null){
+        this.postInfo.imagepost=""
+      }
+      this.addLastPost();
       this.postInfo.replyTo=this.postId;
       console.log("in createReplyPost()")
       var postColRef = collection(db, `${this.forumId}/post`);

@@ -9,16 +9,29 @@
     <div class="card">
       <div class="card-body" v-for="forum in forums" :key="forum.id">
         <h5 class="card-title">{{forum.Title}}</h5>
-        <div style="max-height:100px; max-width:100px; overflow:hidden"><img :src="forum.image" /></div>
+        <div><img :src="forum.imageThread" /></div>
         <p class="card-text">{{forum.Description}}</p>
         <router-link href="#" class="btn btn-primary" :to="{path:`/thread/${forum.id}`}">view thread</router-link>
-       
+        <br/>
+       ----------------------------------------------------------------
       </div>
     </div>
   </div>
   </div>
 </template>
+<style>
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.card img {
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+}
+</style>
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";

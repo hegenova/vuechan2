@@ -17,37 +17,59 @@
    </div>
   <div class="row">
     <div class="card">
-      <div class="card-body" v-for="forum in forums" :key="forum.id">
-        <div style="max-height:100px; max-width:100px; overflow:hidden">
-        <img :src="forum.image" />
+      <div class="card-body" v-for="forum in filteredItems" :key="forum.id">
+        <div>
+        <img :src="forum.imageThread" onerror="this.style.display='none'"/>
         </div>
         #{{ forum.id}}
         <h5 class="card-title">{{ forum.Title }}</h5>
         <p class="card-text">{{ forum.Description }}
         </p>
         <router-link href="#" class="btn btn-primary" :to="{path:`/thread/${forum.id}`}">view thread</router-link>
-        <br /><br />
-        <h5> Last two reply </h5>
-        <br/><br/>
-        <h5>  Last reply </h5>
+        <br />
+        last reply:
+        <br />
+        <div>
+        <img :src="forum.imagepost" onerror="this.style.display='none'"/>
+        </div>
         <br/>
-        <h5>reply amount</h5> <h5>image amount</h5>
+        {{forum.post}}
+        <br/>
+        <h6>reply amount: {{forum.postOrder}}</h6>
+        ----------------------------------------------------------------
       </div>
     </div>
   </div>
 </template>
 
+<style>
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card img {
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+}
+</style>
+
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { getDocs, getCountFromServer, doc, deleteDoc } from "firebase/firestore";
+import { getDocs, getCountFromServer, getDoc, doc, deleteDoc } from "firebase/firestore";
 export default {
   name: 'HomeView',
   components: {
   },
   data() {
     return {
+      threadCount:"",
       forums: [],
+      posts: [],
+      lastPost: [],
       numberOfReply: [],
       selectedDoc: null,
       search: "",
@@ -70,14 +92,20 @@ export default {
       await deleteDoc(forumRef);
       this.$router.go();
     },
+    async autoThreadDeletion(){
+      let docref = forColRef;
+      let ss = await getCountFromServer(docref);
+      this.threadCount = ss.data().count;
+    }
   },
   created() {
     this.fetchData();
+
   },
   computed: {
     filteredItems(){
-      return this.tasks.filter((item) => {
-          return item.category.match(this.search)
+      return this.forums.filter((item) => {
+          return item.Title.match(this.search)
       })
     }
   }

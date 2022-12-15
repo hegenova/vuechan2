@@ -6,11 +6,11 @@
   <form @submit.prevent="createForum">
   <div class="form-group">
     <label for="formGroupExampleInput">Title</label>
-    <input type="text" class="form-control"  placeholder="Title" v-model="Title">
+    <input type="text" class="form-control"  placeholder="Title" v-model="dataInfo.Title">
   </div>
   <div class="form-group">
     <label for="formGroupExampleInput2">Description</label>
-    <input type="text" class="form-control" placeholder="Description" v-model="Description">
+    <input type="text" class="form-control" placeholder="Description" v-model="dataInfo.Description">
   </div>
   <div class="mb-3">
   <label for="formFile" class="form-label">Image</label>
@@ -23,27 +23,54 @@
 <script>
 // @ is an alias to /src
 import forColRef from "../firebase";
-import { addDoc, getDocs, doc, deleteDoc } from "firebase/firestore";
-
+import { addDoc, getDocs, getDoc, setDoc, doc, getCountFromServer, deleteDoc, collection } from "firebase/firestore";
+import db from "../firebase";
 export default {
   name: 'HomeView',
   components: {
   },
   data() {
     return {
+      createdOrder: 0,
+      image: null,
+      addedDoc: '',
+      threadInfo: {
+        orderNow: null,
+      },
+      dataInfo: { 
       Title: '',
       Description: '',
-      image: null,
+      imageThread: null,
+      createdOrder: '',
+      replyAmount: null,
+      imageAmount: null,
+      prevThread: null,
+      bumpOrder: '',}
     }
   },
   methods: {
+    // async getCreatedOrder(){
+    //   const orderDocRef = doc(db, "order", "threadOrder")
+    //   let order=await getDocs(orderDocRef)
+    //   let orderData = order.data();
+    //   console.log(orderData);
+    // },
+    async addPrevThreadOrder(){
+      
+    },
+    async addCreatedOrder(){
+      this.dataInfo.createdOrder = this.createdOrder+1;
+        let setDocRef = doc(db, this.addedDoc)
+       await setDoc(setDocRef, this.dataInfo, {merge: true});
+       console.log("order created")
+    },
     async createForum() {
       console.log("creating forum...");
-      console.log(this.image)
-      console.log(this.Description)
-      console.log(this.Title)
-      console.log(this.data)
-      const addedDoc = await addDoc(forColRef, this.$data);
+      this.dataInfo.imageThread=this.image;
+      const addedDoc = await addDoc(forColRef, this.dataInfo);
+      console.log()
+      this.addedDoc= addedDoc.id;
+      this.addCreatedOrder();
       alert("forum added");
       this.$router.push("/");
     },
@@ -67,6 +94,9 @@ export default {
     removeImage: function (e) {
       this.image = '';
     }
+  },
+  created() {
+    // this.getCreatedOrder();
   }
 }
 </script>

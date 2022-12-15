@@ -11,28 +11,46 @@
       <div class="card-body">
         #{{forumId}}
         <h5 class="card-title">{{forumInfo.Title}}</h5>
-        <div style="max-height:100px; max-width:100px; overflow:hidden"><img :src="forumInfo.image" /></div>
+        <div><img :src="forumInfo.imageThread" onerror="this.style.display='none'"/></div>
         <p class="card-text">{{forumInfo.Description}}</p>
       </div>
     </div>
   </div>
   </div>
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-sm-6">
       <div class="card"> 
         <div class="card-body" v-for="post in posts" :key="post.id">
           #{{ post.id }}
           <br/>
           {{post.replyTo}}
           <br/>
+          <div>
+        <img :src="post.imagepost" onerror="this.style.display='none'"/>
+        </div>
           {{ post.post }}
           <br/>
           <router-link type="submit" class="btn btn-success" :to="{path: `/thread/replyPost/${post.id}`}">reply</router-link>
+          <br/>
+          --------------------------------------------------------------
         </div>
       </div>
   </div>
   </div>
 </template>
+<style>
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card img {
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+}
+</style>
 
 <script>
 // @ is an alias to /src
@@ -55,7 +73,7 @@ export default {
       forumInfo: {
         Title: "",
         Description: "",
-        image: null,
+        imageThread: null,
       },
       posts: [],
       adminMode: false,
@@ -69,7 +87,7 @@ export default {
       let forumData = forum.data();
       this.forumInfo.Title = forumData.Title;
       this.forumInfo.Description = forumData.Description;
-      this.forumInfo.image = forumData.image;
+      this.forumInfo.imageThread = forumData.imageThread;
     },
     async deleteForum(forumID) {
       let forumRef = doc(forColRef, forumID);

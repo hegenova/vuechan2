@@ -20,7 +20,7 @@
 // @ is an alias to /src
 import forColRef from "../firebase";
 import db from "../firebase";
-import { addDoc, doc, deleteDoc } from "firebase/firestore";
+import { addDoc, doc, getCountFromServer, setDoc, deleteDoc } from "firebase/firestore";
 import { getFirestore, collection } from "firebase/firestore";
 export default {
   name: 'HomeView',
@@ -34,15 +34,32 @@ export default {
       replyTo: "",
       threadId: "",
       post: "",
-      imagepost: '',
+      imagepost: "",
+      postOrder: "",
       }
     }
   },
   methods: {
+    async addLastPost(){
+    console.log("adding last post")
+    let postColRef = collection(db, `${this.forumId}/post`);
+    let ss = await getCountFromServer(postColRef);
+    this.postInfo.postOrder = ss.data().count+1;
+    console.log(this.postInfo.postOrder)
+    const lastColRef = doc(db, this.forumId)
+    await setDoc(lastColRef,this.postInfo, {merge: true});
+    console.log("lastPost created");
+    this.$router.push("/");
+    },
     async createPost() {
+      this.postInfo.imagepost=this.image;
+      if (this.image==null){
+        this.postInfo.imagepost=""
+      }
+      this.addLastPost();
       let postColRef = collection(db, `${this.forumId}/post`);
       console.log("creating post...");
-      const addedDoc = await addDoc(postColRef,this.postInfo);
+      await addDoc(postColRef,this.postInfo);
       alert("post added");
       this.$router.push("/");
     },
@@ -52,7 +69,6 @@ export default {
         return;
       this.createImage(files[0]);
       console.log(this.image)
-      this.postInfo.imagepost=this.image;
     },
       createImage(file) {
       var image = new Image();
